@@ -50,6 +50,25 @@ class Layer:
             d_inputs += neuron.backward(d_outputs[i], learning_rate)
         return d_inputs
 
+    def to_dict(self):
+        """
+        Converts the layer's neurons to a dictionary format for saving.
+
+        Returns:
+            list: A list of dictionaries, each representing a neuron's parameters.
+        """
+        return [neuron.to_dict() for neuron in self.neurons]
+
+    def from_dict(self, data):
+        """
+        Loads the layer's neurons from a dictionary.
+
+        Parameters:
+            data (list): A list of dictionaries, each representing a neuron's parameters.
+        """
+        for neuron, neuron_data in zip(self.neurons, data):
+            neuron.from_dict(neuron_data)
+
 
 # Example usage
 if __name__ == "__main__":
