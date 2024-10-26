@@ -87,6 +87,28 @@ class Neuron:
         self.bias -= learning_rate * self.dbias
         return d_input
 
+    def to_dict(self):
+        """
+        Converts the neuron's weights and bias to a dictionary format for saving.
+
+        Returns:
+            dict: A dictionary containing the weights and bias of the neuron.
+        """
+        return {
+            "weights": self.weights.tolist(),
+            "bias": self.bias
+        }
+
+    def from_dict(self, data):
+        """
+        Loads the neuron's weights and bias from a dictionary.
+
+        Parameters:
+            data (dict): A dictionary containing the weights and bias to load.
+        """
+        self.weights = np.array(data["weights"])
+        self.bias = data["bias"]
+
 
 # Example usage
 if __name__ == "__main__":

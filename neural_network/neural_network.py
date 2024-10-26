@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from layer.layer import Layer
 
@@ -96,6 +97,61 @@ class NeuralNetwork:
             predictions.append(self.forward(X[i]))
         return np.array(predictions)
 
+    def save(self, filename="model.json"):
+        """
+        Saves the neural network's layers, neurons, weights, and biases to a JSON file.
+
+        Parameters:
+            filename (str): The name of the file to save the model parameters.
+        """
+        # Initialize the model data dictionary
+        model_data = {
+            "layers": []
+        }
+
+        # Iterate through each layer and store its configuration and neurons
+        for layer in self.layers:
+            layer_data = {
+                "num_neurons": len(layer.neurons),
+                "input_size": len(layer.neurons[0].weights) if layer.neurons else 0,
+                "neurons": layer.to_dict()
+            }
+            model_data["layers"].append(layer_data)
+
+        # Save the model data to a file
+        with open(filename, "w") as f:
+            json.dump(model_data, f)
+        print(f"Model saved to {filename}")
+
+    def load(self, filename="model.json"):
+        """
+        Loads the neural network's layers, neurons, weights, and biases from a JSON file.
+
+        Parameters:
+            filename (str): The name of the file from which to load the model parameters.
+        """
+        with open(filename, "r") as f:
+            model_data = json.load(f)
+
+        # Clear any existing layers before loading
+        self.layers = []
+
+        # Recreate the architecture based on the saved configuration
+        for layer_data in model_data["layers"]:
+            num_neurons = layer_data["num_neurons"]
+            input_size = layer_data["input_size"]
+
+            # Create a new layer with the specified number of neurons and input size
+            new_layer = Layer(num_neurons, input_size)
+
+            # Load neuron parameters from the saved data
+            new_layer.from_dict(layer_data["neurons"])
+
+            # Append the recreated layer to the network
+            self.layers.append(new_layer)
+
+        print(f"Model loaded from {filename}")
+
 
 if __name__ == "__main__":
     # Example of usage:
@@ -114,7 +170,13 @@ if __name__ == "__main__":
     y = np.array([[0.3, 0.6, 0.9]]).T
 
     # Train the network
-    nn.train(X, y, epochs=10000, learning_rate=0.1)
+    nn.train(X, y, epochs=3000, learning_rate=0.5)
+
+    # Save the model after training
+    nn.save("../models/model.json")
+
+    # Load the model (no need to train)
+    nn.load("../models/model.json")
 
     # Predict using the trained network
     predictions = nn.predict(X)
