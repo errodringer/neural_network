@@ -16,8 +16,8 @@ for col in df.columns:
 # Normalize y column
 df['quality'] = df['quality'] / 10
 
-n_train = 200
-n_test = 50
+n_train = 500
+n_test = 200
 
 # Training set
 X_train = df.drop(columns=['quality'])[:n_train].values
@@ -30,13 +30,11 @@ y_test = df['quality'][n_train:n_train+n_test].values.T
 
 nn = NeuralNetwork()
 
-nn.add_layer(num_neurons=X_train.shape[1], input_size=X_train.shape[1])
-nn.add_layer(num_neurons=X_train.shape[1], input_size=3)
-nn.add_layer(num_neurons=X_train.shape[1], input_size=3)
+nn.add_layer(num_neurons=3, input_size=X_train.shape[1])
 nn.add_layer(num_neurons=1, input_size=3)
 
 # Train the network
-nn.train(X_train, y_train, epochs=5000, learning_rate=0.5)
+nn.train(X_train, y_train, epochs=2000, learning_rate=0.1)
 
 # Save the model after training
 nn.save("models/wine_quality_model.json")
@@ -53,6 +51,9 @@ y_test = np.round(y_test*10)
 
 print(f"Predictions: {y_pred[:10]}")
 print(f"Real: {y_test[:10]}")
+
+error = abs((y_pred-y_test)).mean()
+print(f"Error: {error}")
 
 plt.plot(nn.loss_list)
 plt.show()
